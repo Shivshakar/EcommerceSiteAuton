@@ -1,17 +1,13 @@
 package com.automation.pages;
 
+import com.automation.utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 
 public class SignupPage {
     private final WebDriver driver;
-    private final WebDriverWait wait;
 
     // Locators for the 'New User Signup' form
     private final By nameInput = By.xpath("//input[@name='name' or @placeholder='Name']");
@@ -45,32 +41,31 @@ public class SignupPage {
 
     public SignupPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void enterNameAndEmail(String name, String email) {
-        WebElement nameEl = wait.until(ExpectedConditions.visibilityOfElementLocated(nameInput));
-        nameEl.clear();
+        WebElement nameEl = WaitUtils.waitForVisibility(driver, nameInput);
+        try { nameEl.clear(); } catch (Exception ignored) {}
         nameEl.sendKeys(name);
 
         // Wait a short time for page to react to name input (some pages reveal the email field only after typing)
         try {
-            WebElement emailEl = wait.until(ExpectedConditions.visibilityOfElementLocated(emailInput));
+            WebElement emailEl = WaitUtils.waitForVisibility(driver, emailInput);
 
             // Diagnostics: print state if email found but not interactable
             if (!emailEl.isDisplayed() || !emailEl.isEnabled()) {
                 System.out.println("Email field found but not interactable: displayed=" + emailEl.isDisplayed() + ", enabled=" + emailEl.isEnabled());
             }
 
-            emailEl.clear();
+            try { emailEl.clear(); } catch (Exception ignored) {}
             emailEl.sendKeys(email);
         } catch (Exception e) {
             // Try a fallback locator (common email input patterns)
             System.out.println("Primary email locator failed: " + e.getMessage() + "; trying fallback locators...");
             try {
                 By altEmail = By.xpath("//input[@type='email' and (contains(@placeholder,'Email') or contains(translate(@name,'EMAIL','email'),'email'))]");
-                WebElement emailEl = wait.until(ExpectedConditions.visibilityOfElementLocated(altEmail));
-                emailEl.clear();
+                WebElement emailEl = WaitUtils.waitForVisibility(driver, altEmail);
+                try { emailEl.clear(); } catch (Exception ignored) {}
                 emailEl.sendKeys(email);
                 System.out.println("Used fallback email locator");
             } catch (Exception ex) {
@@ -79,7 +74,7 @@ public class SignupPage {
                 try {
                     WebElement anyInput = driver.findElement(By.xpath("//input[not(@type='hidden') and normalize-space(@value)='']"));
                     if (!anyInput.equals(nameEl)) {
-                        anyInput.clear();
+                        try { anyInput.clear(); } catch (Exception ignored) {}
                         anyInput.sendKeys(email);
                         System.out.println("Used generic input fallback to enter email");
                     }
@@ -92,7 +87,7 @@ public class SignupPage {
     }
 
     public void clickSignupButton() {
-        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(signupButton));
+        WebElement btn = WaitUtils.waitForClickable(driver, signupButton);
         btn.click();
     }
 
@@ -103,7 +98,7 @@ public class SignupPage {
                                        String addr1, String addr2, String countryVal,
                                        String stateVal, String cityVal, String zip, String mobile) {
         // Wait for password field to appear
-        wait.until(ExpectedConditions.visibilityOfElementLocated(password));
+        WaitUtils.waitForVisibility(driver, password);
 
         if (selectTitleMr) {
             driver.findElement(titleMr).click();
@@ -140,13 +135,13 @@ public class SignupPage {
     }
 
     public void clickCreateAccount() {
-        WebElement btn = wait.until(ExpectedConditions.elementToBeClickable(createAccountButton));
+        WebElement btn = WaitUtils.waitForClickable(driver, createAccountButton);
         btn.click();
     }
 
     public boolean isAccountCreated() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(accountCreatedMsg));
+            WaitUtils.waitForVisibility(driver, accountCreatedMsg);
             return true;
         } catch (Exception e) {
             return false;

@@ -1,12 +1,9 @@
 package com.automation.pages;
 
+import com.automation.utils.WaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 
 public class HomePage {
     private final WebDriver driver;
@@ -19,13 +16,11 @@ public class HomePage {
 
     public void goTo(String baseUrl) {
         driver.get(baseUrl);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(signupLoginLink));
+        WaitUtils.waitForVisibility(driver, signupLoginLink);
     }
 
     public void clickSignupLogin() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(signupLoginLink));
+        WebElement link = WaitUtils.waitForClickable(driver, signupLoginLink);
         link.click();
     }
 }

@@ -44,46 +44,14 @@ public class SignupPage {
     }
 
     public void enterNameAndEmail(String name, String email) {
+
         WebElement nameEl = WaitUtils.waitForVisibility(driver, nameInput);
-        try { nameEl.clear(); } catch (Exception ignored) {}
+        nameEl.clear();
         nameEl.sendKeys(name);
 
-        // Wait a short time for page to react to name input (some pages reveal the email field only after typing)
-        try {
-            WebElement emailEl = WaitUtils.waitForVisibility(driver, emailInput);
-
-            // Diagnostics: print state if email found but not interactable
-            if (!emailEl.isDisplayed() || !emailEl.isEnabled()) {
-                System.out.println("Email field found but not interactable: displayed=" + emailEl.isDisplayed() + ", enabled=" + emailEl.isEnabled());
-            }
-
-            try { emailEl.clear(); } catch (Exception ignored) {}
-            emailEl.sendKeys(email);
-        } catch (Exception e) {
-            // Try a fallback locator (common email input patterns)
-            System.out.println("Primary email locator failed: " + e.getMessage() + "; trying fallback locators...");
-            try {
-                By altEmail = By.xpath("//input[@type='email' and (contains(@placeholder,'Email') or contains(translate(@name,'EMAIL','email'),'email'))]");
-                WebElement emailEl = WaitUtils.waitForVisibility(driver, altEmail);
-                try { emailEl.clear(); } catch (Exception ignored) {}
-                emailEl.sendKeys(email);
-                System.out.println("Used fallback email locator");
-            } catch (Exception ex) {
-                System.out.println("Fallback email locator also failed: " + ex.getMessage());
-                // As last resort try to find any visible input other than name and use it
-                try {
-                    WebElement anyInput = driver.findElement(By.xpath("//input[not(@type='hidden') and normalize-space(@value)='']"));
-                    if (!anyInput.equals(nameEl)) {
-                        try { anyInput.clear(); } catch (Exception ignored) {}
-                        anyInput.sendKeys(email);
-                        System.out.println("Used generic input fallback to enter email");
-                    }
-                } catch (Exception ignored) {
-                    // ignored
-                }
-                throw new RuntimeException("Failed to locate or fill email input in enterNameAndEmail", ex);
-            }
-        }
+        WebElement emailEl = WaitUtils.waitForVisibility(driver, emailInput);
+        emailEl.clear();
+        emailEl.sendKeys(email);
     }
 
     public void clickSignupButton() {

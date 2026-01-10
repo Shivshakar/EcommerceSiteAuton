@@ -1,6 +1,7 @@
 package com.automation.pages;
 
 import com.automation.utils.WaitUtils;
+import com.automation.utils.ReportManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -48,15 +49,18 @@ public class SignupPage {
         WebElement nameEl = WaitUtils.waitForVisibility(driver, nameInput);
         nameEl.clear();
         nameEl.sendKeys(name);
+        ReportManager.step("Entered name: " + name);
 
         WebElement emailEl = WaitUtils.waitForVisibility(driver, emailInput);
         emailEl.clear();
         emailEl.sendKeys(email);
+        ReportManager.step("Entered email: " + email);
     }
 
     public void clickSignupButton() {
         WebElement btn = WaitUtils.waitForClickable(driver, signupButton);
         btn.click();
+        ReportManager.step("Clicked Signup button");
     }
 
     public void fillAccountInformation(boolean selectTitleMr, String pwd,
@@ -67,26 +71,33 @@ public class SignupPage {
                                        String stateVal, String cityVal, String zip, String mobile) {
         // Wait for password field to appear
         WaitUtils.waitForVisibility(driver, password);
+        ReportManager.step("Filling account information");
 
         if (selectTitleMr) {
             driver.findElement(titleMr).click();
+            ReportManager.step("Selected title: Mr");
         } else {
             driver.findElement(titleMrs).click();
+            ReportManager.step("Selected title: Mrs");
         }
         driver.findElement(password).sendKeys(pwd);
+        ReportManager.step("Entered password");
         new Select(driver.findElement(days)).selectByValue(day);
         new Select(driver.findElement(months)).selectByValue(month);
         new Select(driver.findElement(years)).selectByValue(year);
+        ReportManager.step("Selected DOB: " + day + "/" + month + "/" + year);
 
         if (newsletter) {
             if (!driver.findElement(newsletterCheckbox).isSelected()) {
                 driver.findElement(newsletterCheckbox).click();
             }
+            ReportManager.step("Newsletter checkbox selected");
         }
         if (offers) {
             if (!driver.findElement(offersCheckbox).isSelected()) {
                 driver.findElement(offersCheckbox).click();
             }
+            ReportManager.step("Offers checkbox selected");
         }
 
         // Fill address info
@@ -100,18 +111,22 @@ public class SignupPage {
         driver.findElement(city).sendKeys(cityVal);
         driver.findElement(zipcode).sendKeys(zip);
         driver.findElement(mobileNumber).sendKeys(mobile);
+        ReportManager.step("Filled address and contact info");
     }
 
     public void clickCreateAccount() {
         WebElement btn = WaitUtils.waitForClickable(driver, createAccountButton);
         btn.click();
+        ReportManager.step("Clicked Create Account button");
     }
 
     public boolean isAccountCreated() {
         try {
             WaitUtils.waitForVisibility(driver, accountCreatedMsg);
+            ReportManager.step("Account created message visible");
             return true;
         } catch (Exception e) {
+            ReportManager.step("Account created message NOT visible");
             return false;
         }
     }

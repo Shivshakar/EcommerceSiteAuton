@@ -1,6 +1,7 @@
 package com.automation.pages;
 
 import com.automation.utils.WaitUtils;
+import com.automation.utils.ReportManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,11 +17,13 @@ public class HomePage {
 
     public void goTo(String baseUrl) {
         driver.get(baseUrl);
+        ReportManager.step("Navigate to: " + baseUrl);
         WaitUtils.waitForVisibility(driver, signupLoginLink);
     }
 
     public void clickSignupLogin() {
         WebElement link = WaitUtils.waitForClickable(driver, signupLoginLink);
         link.click();
+        ReportManager.step("Clicked Signup / Login link");
     }
 }

@@ -1,17 +1,16 @@
+# Recommended .gitignore for a Java / Maven project
+
 # Maven build output
 /target/
 
-# Allow maven wrapper jar
+# Keep the maven wrapper jar (if present)
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
 
 # IntelliJ IDEA
 /.idea/
 *.iml
 *.iws
 *.ipr
-.idea/*
 
 # Eclipse
 .classpath
@@ -32,21 +31,37 @@
 .DS_Store
 Thumbs.db
 
-# Logs and temp
+# Logs and temporary files
 *.log
 *.tmp
 *.swp
+*.bak
 
-# Others
-.class
-
-# Keep local environment overrides out
-/config.properties
-
-# Ignore build artifacts from various tools
+# Build and output directories used by other tools
+/out/
 /build/
+
+# Java artifacts
+*.class
+*.jar
+*.war
+*.ear
+
+# Test output / reports
+/surefire-reports/
+/failsafe-reports/
+
+# Generated sources
+/generated/
 
 # Docker
 docker-compose.override.yml
+
+# Misc
+.idea/*
+
+# IMPORTANT: do NOT ignore your repository config files that tests depend on.
+# For example, keep src/test/resources/config.properties tracked so TestBase/ConfigReader can read it.
+# If you have local-only config files, add them here (e.g. config.local.properties) but do not blanket-ignore config.properties
 
 # End of file

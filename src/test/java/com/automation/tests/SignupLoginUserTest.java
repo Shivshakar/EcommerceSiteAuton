@@ -7,7 +7,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class RegisterUserTest extends TestBase {
+public class SignupLoginUserTest extends TestBase {
 
     // store credentials so dependent test can use them
     private static String registeredEmail;

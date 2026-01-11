@@ -15,6 +15,9 @@ public class SignupPage {
     private final By emailInput = By.xpath("//input[@data-qa='signup-email']");
     private final By signupButton = By.xpath("//button[contains(text(),'Signup') or contains(text(),'Sign up')]");
 
+    // Locator for signup error when email already exists
+    private final By signupErrorMsg = By.xpath("//p[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'email') and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'exist')]");
+
     // Locators for account information form (after clicking Signup)
     private final By titleMr = By.id("id_gender1");
     private final By titleMrs = By.id("id_gender2");
@@ -61,6 +64,18 @@ public class SignupPage {
         WebElement btn = WaitUtils.waitForClickable(driver, signupButton);
         btn.click();
         ReportManager.step("Clicked Signup button");
+    }
+
+    // New helper to detect signup error when trying to register with an existing email
+    public boolean isEmailAlreadyExist() {
+        try {
+            WebElement el = WaitUtils.waitForVisibility(driver, signupErrorMsg, 5);
+            String txt = el.getText();
+            ReportManager.step("Signup error message: " + txt);
+            return txt != null && txt.toLowerCase().contains("exist");
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public void fillAccountInformation(boolean selectTitleMr, String pwd,

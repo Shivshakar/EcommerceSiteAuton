@@ -46,6 +46,21 @@ public class RegisterUserTest extends TestBase {
         registeredEmail = uniqueEmail;
     }
 
+    // New negative test: attempting to register again with the same email should show an error
+    @Test(dependsOnMethods = {"testRegisterUser"})
+    public void testRegisterUserWithExistingEmail() {
+        Assert.assertNotNull(registeredEmail, "Registered email should be set by testRegisterUser");
+
+        SignupPage signup = new SignupPage(driver);
+        // use a different name but the same email to attempt duplicate registration
+        String anotherName = "another" + System.currentTimeMillis();
+        signup.enterNameAndEmail(anotherName, registeredEmail);
+        signup.clickSignupButton();
+
+        // verify the page shows an 'email already exist' message
+        Assert.assertTrue(signup.isEmailAlreadyExist(), "Signup should show 'email already exist' error for duplicate email");
+    }
+
     @Test(dependsOnMethods = {"testRegisterUser"})
     public void testLoginUserWithCorrectEmailAndPassword() {
         // Use the registered credentials from the previous test

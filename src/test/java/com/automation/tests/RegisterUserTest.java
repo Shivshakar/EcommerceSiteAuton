@@ -4,6 +4,7 @@ import com.automation.base.TestBase;
 import com.automation.pages.HomePage;
 import com.automation.pages.SignupPage;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class RegisterUserTest extends TestBase {
@@ -12,12 +13,18 @@ public class RegisterUserTest extends TestBase {
     private static String registeredEmail;
     private static final String registeredPassword = "P@ssw0rd!";
 
-    @Test
-    public void testRegisterUser() {
-        HomePage home = new HomePage(driver);
+    // shared HomePage instance to avoid repeating navigation/setup in each test
+    private HomePage home;
+
+    @BeforeMethod
+    public void openLoginPage() {
+        home = new HomePage(driver);
         home.goTo(baseUrl);
         home.clickSignupLogin();
+    }
 
+    @Test
+    public void testRegisterUser() {
         SignupPage signup = new SignupPage(driver);
         String uniqueName = "testuser" + System.currentTimeMillis();
         String uniqueEmail = "testuser" + System.currentTimeMillis() + "@example.com";
@@ -41,11 +48,6 @@ public class RegisterUserTest extends TestBase {
 
     @Test(dependsOnMethods = {"testRegisterUser"})
     public void testLoginUserWithCorrectEmailAndPassword() {
-        // Navigate to home and then to the login form
-        HomePage home = new HomePage(driver);
-        home.goTo(baseUrl);
-        home.clickSignupLogin();
-
         // Use the registered credentials from the previous test
         Assert.assertNotNull(registeredEmail, "Registered email should be set by testRegisterUser");
 
@@ -55,5 +57,17 @@ public class RegisterUserTest extends TestBase {
 
         // Verify successful login
         Assert.assertTrue(home.isLoggedIn(), "User should be logged in with registered credentials");
+    }
+
+    // New negative test: invalid credentials should not log the user in
+    @Test
+    public void testLoginWithInvalidCredentials() {
+        // use an obviously invalid email/password
+        home.enterLoginEmail("invalid_" + System.currentTimeMillis() + "@example.com");
+        home.enterLoginPassword("wrongPassword123");
+        home.clickLoginButton();
+
+        // Verify login did not succeed
+        Assert.assertFalse(home.isLoggedIn(), "User should NOT be logged in with invalid credentials");
     }
 }

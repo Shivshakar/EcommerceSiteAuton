@@ -16,6 +16,8 @@ public class HomePage {
     private final By loginPasswordInput = By.cssSelector("input[data-qa='login-password']");
     private final By loginButton = By.xpath("//button[contains(text(),'Login') or contains(text(),'Log In')]");
     private final By loggedInAs = By.xpath("//a[contains(text(),'Logged in as')]");
+    // Logout locator
+    private final By logoutLink = By.xpath("//a[contains(text(),'Logout') or text()='Logout']");
 
     public HomePage(WebDriver driver) {
         this.driver = driver;
@@ -68,6 +70,25 @@ public class HomePage {
             return true;
         } catch (Exception e) {
             ReportManager.step("User not logged in");
+            return false;
+        }
+    }
+
+    // Clicks the logout link (should be visible when user is logged in)
+    public void clickLogout() {
+        WebElement link = WaitUtils.waitForClickable(driver, logoutLink);
+        link.click();
+        ReportManager.step("Clicked Logout link");
+    }
+
+    // Returns true when the user is logged out (we detect by the presence of the Signup / Login link)
+    public boolean isLoggedOut() {
+        try {
+            WaitUtils.waitForVisibility(driver, signupLoginLink);
+            ReportManager.step("User appears logged out");
+            return true;
+        } catch (Exception e) {
+            ReportManager.step("User not logged out");
             return false;
         }
     }

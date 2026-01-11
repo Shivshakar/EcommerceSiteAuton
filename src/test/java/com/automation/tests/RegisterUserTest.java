@@ -70,4 +70,19 @@ public class RegisterUserTest extends TestBase {
         // Verify login did not succeed
         Assert.assertFalse(home.isLoggedIn(), "User should NOT be logged in with invalid credentials");
     }
+
+    // New test: logout after successful login
+    @Test(dependsOnMethods = {"testRegisterUser"})
+    public void testLogoutAfterLogin() {
+
+        home.enterLoginEmail(registeredEmail);
+        home.enterLoginPassword(registeredPassword);
+        home.clickLoginButton();
+        // Ensure we're logged in
+        Assert.assertTrue(home.isLoggedIn(), "Precondition: user should be logged in");
+
+        // Click logout and verify logged out state
+        home.clickLogout();
+        Assert.assertTrue(home.isLoggedOut(), "User should be logged out after clicking Logout");
+    }
 }

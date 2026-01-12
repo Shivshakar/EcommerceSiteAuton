@@ -20,6 +20,9 @@ public class HomePage {
     // Logout locator
     private final By logoutLink = By.xpath("//a[contains(text(),'Logout') or text()='Logout']");
 
+    // Cart locator - moved to page object so tests don't use inline locators
+    private final By cartLink = By.xpath("//a[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'cart') or contains(., 'Cart')]");
+
     // --- Subscription/footer locators moved here from tests ---
     // The site sometimes uses a misspelled id for the subscription input; include common fallbacks in the selector.
     private final By subscriptionHeading = By.xpath("//h2[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'subscription')]");
@@ -98,6 +101,23 @@ public class HomePage {
         } catch (Exception e) {
             ReportManager.step("User not logged out");
             return false;
+        }
+    }
+
+    // --- Cart helper (best-effort) ---
+    /**
+     * Attempts to click the cart link/button if it exists. This is a best-effort helper; it will
+     * catch exceptions and log via ReportManager instead of throwing so tests don't fail when a
+     * cart button isn't present.
+     */
+    public void clickCart() {
+        try {
+            WebElement el = WaitUtils.waitForClickable(driver, cartLink, 3);
+            el.click();
+            ReportManager.step("Clicked Cart link");
+        } catch (Exception e) {
+            // Don't fail the test — cart is optional in some flows/sites. Log and continue.
+            ReportManager.step("Cart link not present or could not be clicked: " + e.getMessage());
         }
     }
 

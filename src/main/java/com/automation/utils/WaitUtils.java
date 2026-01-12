@@ -34,8 +34,12 @@ public final class WaitUtils {
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
+    public static WebElement waitForClickable(WebDriver driver, WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT_SECONDS));
+        return wait.until(ExpectedConditions.elementToBeClickable(element));
+    }
+
     public static void sleepMillis(long ms) {
         try { Thread.sleep(ms); } catch (InterruptedException ignored) {}
     }
 }
-

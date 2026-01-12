@@ -118,4 +118,3 @@ public class RegisterAndPlaceOrderTest extends TestBase {
         } catch (Exception ignored) {}
     }
 }
-

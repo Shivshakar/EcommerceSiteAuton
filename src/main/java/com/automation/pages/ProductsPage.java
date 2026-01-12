@@ -1,5 +1,6 @@
 package com.automation.pages;
 
+import com.automation.utils.BrowserUtils;
 import com.automation.utils.WaitUtils;
 import com.automation.utils.ReportManager;
 import org.openqa.selenium.By;
@@ -25,6 +26,11 @@ public class ProductsPage {
     private final By productList = By.cssSelector(".features_items");
     private final By productBlocks = By.cssSelector(".features_items .col-sm-4");
 
+    // --- Search locators ---
+    private final By searchInput = By.id("search_product");
+    private final By searchButton = By.id("submit_search");
+    private final By searchedProductsHeader = By.xpath("//h2[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'searched products')]");
+
     // Product detail page stable locator (used to detect successful navigation)
     private final By productDetailName = By.xpath("//div[@class='product-information']//h2|//h2[@itemprop='name']");
 
@@ -34,9 +40,20 @@ public class ProductsPage {
 
     public void clickProductsLink() {
         WebElement link = WaitUtils.waitForClickable(driver, productsLink);
-        link.click();
-        ReportManager.step("Clicked Products link");
-        WaitUtils.waitForVisibility(driver, allProductsHeader);
+        String href = null;
+        try { href = link.getAttribute("href"); } catch (Exception ignored) {}
+
+        boolean ok = BrowserUtils.safeClickAndNavigate(driver, link, allProductsHeader, href != null ? href : (driver.getCurrentUrl() + "/products"), 10);
+        if (!ok) {
+            // final fallback: direct navigation to base/products
+            try {
+                String base = driver.getCurrentUrl();
+                driver.get((href != null && !href.isEmpty()) ? href : base + "/products");
+                WaitUtils.waitForVisibility(driver, allProductsHeader);
+            } catch (Exception ignored) {}
+        }
+
+        ReportManager.step("Clicked Products link (safe)");
     }
 
     public boolean isAllProductsVisible() {
@@ -59,6 +76,35 @@ public class ProductsPage {
             ReportManager.step("Product list NOT visible");
             return false;
         }
+    }
+
+    // --- Search helpers ---
+    public void enterSearchQuery(String query) {
+        WebElement input = WaitUtils.waitForVisibility(driver, searchInput);
+        input.clear();
+        input.sendKeys(query);
+        ReportManager.step("Entered search query: " + query);
+    }
+
+    public void clickSearchButton() {
+        WebElement btn = WaitUtils.waitForClickable(driver, searchButton);
+        btn.click();
+        ReportManager.step("Clicked search button");
+    }
+
+    public boolean isSearchedProductsVisible() {
+        try {
+            WaitUtils.waitForVisibility(driver, searchedProductsHeader);
+            ReportManager.step("Searched Products header visible");
+            return true;
+        } catch (Exception e) {
+            ReportManager.step("Searched Products header NOT visible");
+            return false;
+        }
+    }
+
+    public boolean areSearchResultsVisible() {
+        return isProductListVisible();
     }
 
     // Click the 'View Product' for the product at given index (0-based)
